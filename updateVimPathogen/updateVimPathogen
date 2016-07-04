@@ -1,0 +1,112 @@
+#!/bin/bash
+#TODO Write documentation
+
+#--------------
+
+# Init internal function
+
+function myEcho {
+  # Echo string only if verbose are selected
+  # First argument  = verbose (1 or 0)
+  # Second argument = String to display
+  if [ $1 -eq 1 ]; then
+    echo $2
+  fi
+}
+
+#--------------
+
+# Init global variable
+directory="~/.vim/bundle"
+current=0
+verbose=0
+
+#--------------
+
+# Get option
+for var in ${@}
+do
+  if   [[ $var == -d=* ]]; then
+    directory=${var:3} 
+  elif [[ $var == "-c" ]]; then
+    current=1
+  elif [[ $var == "-v" ]]; then
+    verbose=1
+  fi
+done
+
+#--------------
+
+# Check dependency
+if ! type -p git > /dev/null; then
+  myEcho $verbose "[ERROR] git are not installed"
+  exit
+fi
+
+if ! type -p wget > /dev/null; then
+  myEcho $verbose "[ERROR] wget are not installed"
+  exit
+fi
+
+# I'm not checking if vim is installed, because user can use 
+# this script to update all git folder :)
+
+#--------------
+
+# Check if directory exist
+if [ ! -d "`eval echo ${directory//>}`" ]; then
+  myEcho $verbose "[ERROR] $directory is not a directory"
+  exit
+fi
+
+cd `eval echo ${directory//>}`
+
+#--------------
+
+# Check network connection
+wget -q --tries=10 --timeout=20 --spider http://google.com
+if [[ $? -ne 0 ]]; then
+  myEcho $verbose "[ERROR] No internet connection"
+  exit
+fi
+
+#--------------
+
+# If option current is choosen, update current folder as vim plugin
+if [ current -eq 1 ]; then
+  # Check if directory are a git repository
+  if [ ! -d .git ]; then
+    myEcho $verbose "[ERROR] $directory are not a git repository"
+  else
+    myEcho $verbose "Update current folder as vim plugin"
+    if [ verbose -eq 1 ]; then
+      git pull
+    else
+      git pull &> /dev/null
+    fi
+    myEcho $verbose "Update completed"
+  fi
+  exit
+fi
+
+#--------------
+
+# If option current is not choosen, update each folder as folder for vim plugin
+for dir in `ls -d */`
+do
+  cd $dir
+  # Check if directory are a git repository
+  if [ -d .git ]; then
+    myEcho $verbose "Update $dir"
+    if [ verbose -eq 1 ]; then
+      git pull
+    else
+      git pull &> /dev/null
+    fi
+    myEcho $verbose "---------------"
+  fi
+  cd ..
+done
+
+myEcho $verbose "Update completed"
+exit
