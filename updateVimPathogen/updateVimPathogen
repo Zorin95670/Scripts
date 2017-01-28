@@ -73,7 +73,7 @@ fi
 #--------------
 
 # If option current is choosen, update current folder as vim plugin
-if [ current -eq 1 ]; then
+if [[ current -eq 1 ]]; then
   # Check if directory are a git repository
   if [ ! -d .git ]; then
     myEcho $verbose "[ERROR] $directory are not a git repository"
@@ -98,7 +98,7 @@ do
   # Check if directory are a git repository
   if [ -d .git ]; then
     myEcho $verbose "Update $dir"
-    if [ verbose -eq 1 ]; then
+    if [[ verbose -eq 1 ]]; then
       git pull
     else
       git pull &> /dev/null

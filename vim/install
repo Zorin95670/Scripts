@@ -1,0 +1,20 @@
+#!/bin/bash
+
+ME=${BASH_SOURCE[0]}
+SOURCE=$(dirname "${ME}")
+
+apt-get install curl git vim
+
+mkdir -p ~/.vim/autoload ~/.vim/bundle
+
+curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+
+ln -s $SOURCE/vimrc #HOME/.vimrc
+
+cd ~/.vim/bundle
+
+git clone https://github.com/tpope/vim-sensible.git
+git clone https://github.com/scrooloose/nerdtree
+git clone https://github.com/scrooloose/syntastic
+git clone https://github.com/valloric/youcompleteme
+git clone https://github.com/pangloss/vim-javascript
